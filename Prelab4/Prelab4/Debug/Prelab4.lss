@@ -3,60 +3,62 @@ Prelab4.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00800100  0000018c  2**0
+  0 .data         00000000  00800100  00800100  0000020e  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000138  00000000  00000000  00000054  2**1
+  1 .text         0000019a  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .comment      00000030  00000000  00000000  0000018c  2**0
+  2 .bss          00000002  00800100  00800100  0000020e  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  0000020e  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000001bc  2**2
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000240  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000030  00000000  00000000  000001fc  2**0
+  5 .debug_aranges 00000050  00000000  00000000  00000280  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   000007be  00000000  00000000  0000022c  2**0
+  6 .debug_info   000007ab  00000000  00000000  000002d0  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 000006d2  00000000  00000000  000009ea  2**0
+  7 .debug_abbrev 0000069e  00000000  00000000  00000a7b  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   0000030c  00000000  00000000  000010bc  2**0
+  8 .debug_line   0000034a  00000000  00000000  00001119  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000044  00000000  00000000  000013c8  2**2
+  9 .debug_frame  00000094  00000000  00000000  00001464  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    000003f5  00000000  00000000  0000140c  2**0
+ 10 .debug_str    000003ee  00000000  00000000  000014f8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    000000e4  00000000  00000000  00001801  2**0
+ 11 .debug_loc    00000090  00000000  00000000  000018e6  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000020  00000000  00000000  000018e5  2**0
+ 12 .debug_ranges 00000040  00000000  00000000  00001976  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
 
 00000000 <__vectors>:
    0:	0c 94 34 00 	jmp	0x68	; 0x68 <__ctors_end>
-   4:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-   8:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-   c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  10:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  14:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  18:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  1c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  20:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  24:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  28:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  2c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  30:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  34:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  38:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  3c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  40:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  44:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  48:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  4c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  50:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  54:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  58:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  5c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  60:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
-  64:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+   4:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+   8:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+   c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  10:	0c 94 78 00 	jmp	0xf0	; 0xf0 <__vector_4>
+  14:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  18:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  1c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  20:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  24:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  28:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  2c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  30:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  34:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  38:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  3c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  40:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  44:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  48:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  4c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  50:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  54:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  58:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  5c:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  60:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
+  64:	0c 94 46 00 	jmp	0x8c	; 0x8c <__bad_interrupt>
 
 00000068 <__ctors_end>:
   68:	11 24       	eor	r1, r1
@@ -65,182 +67,272 @@ Disassembly of section .text:
   6e:	d8 e0       	ldi	r29, 0x08	; 8
   70:	de bf       	out	0x3e, r29	; 62
   72:	cd bf       	out	0x3d, r28	; 61
-  74:	0e 94 5c 00 	call	0xb8	; 0xb8 <main>
-  78:	0c 94 9a 00 	jmp	0x134	; 0x134 <_exit>
 
-0000007c <__bad_interrupt>:
-  7c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+00000074 <__do_clear_bss>:
+  74:	21 e0       	ldi	r18, 0x01	; 1
+  76:	a0 e0       	ldi	r26, 0x00	; 0
+  78:	b1 e0       	ldi	r27, 0x01	; 1
+  7a:	01 c0       	rjmp	.+2      	; 0x7e <.do_clear_bss_start>
 
-00000080 <ADC_init>:
+0000007c <.do_clear_bss_loop>:
+  7c:	1d 92       	st	X+, r1
+
+0000007e <.do_clear_bss_start>:
+  7e:	a2 30       	cpi	r26, 0x02	; 2
+  80:	b2 07       	cpc	r27, r18
+  82:	e1 f7       	brne	.-8      	; 0x7c <.do_clear_bss_loop>
+  84:	0e 94 8e 00 	call	0x11c	; 0x11c <main>
+  88:	0c 94 cb 00 	jmp	0x196	; 0x196 <_exit>
+
+0000008c <__bad_interrupt>:
+  8c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000090 <timer0_init>:
+
+//======================Preliminar ================================
+// Timer init
+void timer0_init()
+{
+	TCCR0A = 0x00;
+  90:	14 bc       	out	0x24, r1	; 36
+	TCCR0B = (1<<CS01) | (1<<CS00); // prescaler 64
+  92:	83 e0       	ldi	r24, 0x03	; 3
+  94:	85 bd       	out	0x25, r24	; 37
+  96:	08 95       	ret
+
+00000098 <debounce_timer0>:
+}
+
+// Debounce
+void debounce_timer0()
+{
+	TCNT0 = 0;
+  98:	16 bc       	out	0x26, r1	; 38
+	while (TCNT0 < 78);
+  9a:	86 b5       	in	r24, 0x26	; 38
+  9c:	8e 34       	cpi	r24, 0x4E	; 78
+  9e:	e8 f3       	brcs	.-6      	; 0x9a <debounce_timer0+0x2>
+}
+  a0:	08 95       	ret
+
+000000a2 <pcint_init>:
+
+// PCINT init
+void pcint_init()
+{
+	PCICR |= (1<<PCIE1);
+  a2:	e8 e6       	ldi	r30, 0x68	; 104
+  a4:	f0 e0       	ldi	r31, 0x00	; 0
+  a6:	80 81       	ld	r24, Z
+  a8:	82 60       	ori	r24, 0x02	; 2
+  aa:	80 83       	st	Z, r24
+	PCMSK1 |= (1<<PCINT10) | (1<<PCINT11);
+  ac:	ec e6       	ldi	r30, 0x6C	; 108
+  ae:	f0 e0       	ldi	r31, 0x00	; 0
+  b0:	80 81       	ld	r24, Z
+  b2:	8c 60       	ori	r24, 0x0C	; 12
+  b4:	80 83       	st	Z, r24
+  b6:	08 95       	ret
+
+000000b8 <ADC_init>:
 // Main Function
 
 //===========inicializar la parte del ADC==============
 void ADC_init()
 {
 	ADMUX = (1<<REFS0); // Referencia AVcc (5V)
-  80:	80 e4       	ldi	r24, 0x40	; 64
-  82:	80 93 7c 00 	sts	0x007C, r24	; 0x80007c <__TEXT_REGION_LENGTH__+0x7f807c>
+  b8:	80 e4       	ldi	r24, 0x40	; 64
+  ba:	80 93 7c 00 	sts	0x007C, r24	; 0x80007c <__TEXT_REGION_LENGTH__+0x7f807c>
 
 	ADCSRA = (1<<ADEN)  // Habilitar ADC
-  86:	87 e8       	ldi	r24, 0x87	; 135
-  88:	80 93 7a 00 	sts	0x007A, r24	; 0x80007a <__TEXT_REGION_LENGTH__+0x7f807a>
-  8c:	08 95       	ret
+  be:	87 e8       	ldi	r24, 0x87	; 135
+  c0:	80 93 7a 00 	sts	0x007A, r24	; 0x80007a <__TEXT_REGION_LENGTH__+0x7f807a>
+  c4:	08 95       	ret
 
-0000008e <ADC_read>:
+000000c6 <ADC_read>:
 y cualquier valor inferior a 5 V será una relación entre 5 V y 1023.
 */
 uint16_t ADC_read(uint8_t channel)
 {
 	// Seleccionar canal (A6 = 6)
 	ADMUX = (ADMUX & 0xF0) | (channel & 0x0F);
-  8e:	ec e7       	ldi	r30, 0x7C	; 124
-  90:	f0 e0       	ldi	r31, 0x00	; 0
-  92:	90 81       	ld	r25, Z
-  94:	90 7f       	andi	r25, 0xF0	; 240
-  96:	8f 70       	andi	r24, 0x0F	; 15
-  98:	89 2b       	or	r24, r25
-  9a:	80 83       	st	Z, r24
+  c6:	ec e7       	ldi	r30, 0x7C	; 124
+  c8:	f0 e0       	ldi	r31, 0x00	; 0
+  ca:	90 81       	ld	r25, Z
+  cc:	90 7f       	andi	r25, 0xF0	; 240
+  ce:	8f 70       	andi	r24, 0x0F	; 15
+  d0:	89 2b       	or	r24, r25
+  d2:	80 83       	st	Z, r24
 
 	ADCSRA |= (1<<ADSC); // Iniciar conversión para mi adc.
-  9c:	ea e7       	ldi	r30, 0x7A	; 122
-  9e:	f0 e0       	ldi	r31, 0x00	; 0
-  a0:	80 81       	ld	r24, Z
-  a2:	80 64       	ori	r24, 0x40	; 64
-  a4:	80 83       	st	Z, r24
+  d4:	ea e7       	ldi	r30, 0x7A	; 122
+  d6:	f0 e0       	ldi	r31, 0x00	; 0
+  d8:	80 81       	ld	r24, Z
+  da:	80 64       	ori	r24, 0x40	; 64
+  dc:	80 83       	st	Z, r24
 
 	while (ADCSRA & (1<<ADSC)); // Esperar
-  a6:	80 91 7a 00 	lds	r24, 0x007A	; 0x80007a <__TEXT_REGION_LENGTH__+0x7f807a>
-  aa:	86 fd       	sbrc	r24, 6
-  ac:	fc cf       	rjmp	.-8      	; 0xa6 <ADC_read+0x18>
+  de:	80 91 7a 00 	lds	r24, 0x007A	; 0x80007a <__TEXT_REGION_LENGTH__+0x7f807a>
+  e2:	86 fd       	sbrc	r24, 6
+  e4:	fc cf       	rjmp	.-8      	; 0xde <ADC_read+0x18>
 
 	return ADC; // Resultado 0–1023
-  ae:	80 91 78 00 	lds	r24, 0x0078	; 0x800078 <__TEXT_REGION_LENGTH__+0x7f8078>
-  b2:	90 91 79 00 	lds	r25, 0x0079	; 0x800079 <__TEXT_REGION_LENGTH__+0x7f8079>
+  e6:	80 91 78 00 	lds	r24, 0x0078	; 0x800078 <__TEXT_REGION_LENGTH__+0x7f8078>
+  ea:	90 91 79 00 	lds	r25, 0x0079	; 0x800079 <__TEXT_REGION_LENGTH__+0x7f8079>
 }
-  b6:	08 95       	ret
+  ee:	08 95       	ret
 
-000000b8 <main>:
+000000f0 <__vector_4>:
+}
+*/
+	
+	//  ISR
+	ISR(PCINT1_vect)
+	{
+  f0:	1f 92       	push	r1
+  f2:	0f 92       	push	r0
+  f4:	0f b6       	in	r0, 0x3f	; 63
+  f6:	0f 92       	push	r0
+  f8:	11 24       	eor	r1, r1
+  fa:	8f 93       	push	r24
+		if (!(PINC & (1<<PC2)))
+  fc:	32 99       	sbic	0x06, 2	; 6
+  fe:	03 c0       	rjmp	.+6      	; 0x106 <__vector_4+0x16>
+		flag_up = 1;
+ 100:	81 e0       	ldi	r24, 0x01	; 1
+ 102:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <flag_up>
+
+		if (!(PINC & (1<<PC3)))
+ 106:	33 99       	sbic	0x06, 3	; 6
+ 108:	03 c0       	rjmp	.+6      	; 0x110 <__vector_4+0x20>
+		flag_down = 1;
+ 10a:	81 e0       	ldi	r24, 0x01	; 1
+ 10c:	80 93 00 01 	sts	0x0100, r24	; 0x800100 <__DATA_REGION_ORIGIN__>
+	}
+ 110:	8f 91       	pop	r24
+ 112:	0f 90       	pop	r0
+ 114:	0f be       	out	0x3f, r0	; 63
+ 116:	0f 90       	pop	r0
+ 118:	1f 90       	pop	r1
+ 11a:	18 95       	reti
+
+0000011c <main>:
 //Parte del Main que se utiliza en el laboratorio:
 
 int main(void)
 {
 	//******** Configuración salidas***********
 	DDRB = 0x3F;   // PB0–PB5
-  b8:	8f e3       	ldi	r24, 0x3F	; 63
-  ba:	84 b9       	out	0x04, r24	; 4
+ 11c:	8f e3       	ldi	r24, 0x3F	; 63
+ 11e:	84 b9       	out	0x04, r24	; 4
 	DDRC |= 0x03;  // PC0–PC1
-  bc:	87 b1       	in	r24, 0x07	; 7
-  be:	83 60       	ori	r24, 0x03	; 3
-  c0:	87 b9       	out	0x07, r24	; 7
+ 120:	87 b1       	in	r24, 0x07	; 7
+ 122:	83 60       	ori	r24, 0x03	; 3
+ 124:	87 b9       	out	0x07, r24	; 7
 
 	//********* Configuración entradas**************
 	DDRC &= ~((1<<PC2) | (1<<PC3)); // PC2, PC3 entradas
-  c2:	87 b1       	in	r24, 0x07	; 7
-  c4:	83 7f       	andi	r24, 0xF3	; 243
-  c6:	87 b9       	out	0x07, r24	; 7
+ 126:	87 b1       	in	r24, 0x07	; 7
+ 128:	83 7f       	andi	r24, 0xF3	; 243
+ 12a:	87 b9       	out	0x07, r24	; 7
 	PORTC |= (1<<PC2) | (1<<PC3);   // Pull-ups
-  c8:	88 b1       	in	r24, 0x08	; 8
-  ca:	8c 60       	ori	r24, 0x0C	; 12
-  cc:	88 b9       	out	0x08, r24	; 8
+ 12c:	88 b1       	in	r24, 0x08	; 8
+ 12e:	8c 60       	ori	r24, 0x0C	; 12
+ 130:	88 b9       	out	0x08, r24	; 8
+	timer0_init();
+ 132:	0e 94 48 00 	call	0x90	; 0x90 <timer0_init>
+	pcint_init();
+ 136:	0e 94 51 00 	call	0xa2	; 0xa2 <pcint_init>
 
 	ADC_init(); //  inicializar ADC (PARTE NUEVA)
-  ce:	0e 94 40 00 	call	0x80	; 0x80 <ADC_init>
-
+ 13a:	0e 94 5c 00 	call	0xb8	; 0xb8 <ADC_init>
+	sei(); // habilitar interrupciones
+ 13e:	78 94       	sei
+	
 	uint8_t contador = 0;
-  d2:	c0 e0       	ldi	r28, 0x00	; 0
+ 140:	c0 e0       	ldi	r28, 0x00	; 0
 	uint16_t adc_val = 0; //  variable ADC
 
 	while (1)
 	{
 		//  Leer potenciómetro movible en A6
 		adc_val = ADC_read(6);
-  d4:	86 e0       	ldi	r24, 0x06	; 6
-  d6:	0e 94 47 00 	call	0x8e	; 0x8e <ADC_read>
+ 142:	86 e0       	ldi	r24, 0x06	; 6
+ 144:	0e 94 63 00 	call	0xc6	; 0xc6 <ADC_read>
 		
 		
 		// PARTE DEL PRELAB:
+		
 		//  BOTÓN UP
-		if (!(PINC & (1<<PC2)))
-  da:	32 99       	sbic	0x06, 2	; 6
-  dc:	0e c0       	rjmp	.+28     	; 0xfa <main+0x42>
-	#else
-		//round up by default
-		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
-	#endif
-
-	__builtin_avr_delay_cycles(__ticks_dc);
-  de:	2f ef       	ldi	r18, 0xFF	; 255
-  e0:	89 ef       	ldi	r24, 0xF9	; 249
-  e2:	90 e0       	ldi	r25, 0x00	; 0
-  e4:	21 50       	subi	r18, 0x01	; 1
-  e6:	80 40       	sbci	r24, 0x00	; 0
-  e8:	90 40       	sbci	r25, 0x00	; 0
-  ea:	e1 f7       	brne	.-8      	; 0xe4 <main+0x2c>
-  ec:	00 c0       	rjmp	.+0      	; 0xee <main+0x36>
-  ee:	00 00       	nop
+		if (flag_up)
+ 148:	80 91 01 01 	lds	r24, 0x0101	; 0x800101 <flag_up>
+ 14c:	88 23       	and	r24, r24
+ 14e:	49 f0       	breq	.+18     	; 0x162 <main+0x46>
 		{
-			_delay_ms(20);
-			if (!(PINC & (1<<PC2)))
-  f0:	32 99       	sbic	0x06, 2	; 6
-  f2:	03 c0       	rjmp	.+6      	; 0xfa <main+0x42>
+			debounce_timer0();
+ 150:	0e 94 4c 00 	call	0x98	; 0x98 <debounce_timer0>
+
+			if (!(PINC & (1<<PC2))) // confirmar
+ 154:	32 99       	sbic	0x06, 2	; 6
+ 156:	03 c0       	rjmp	.+6      	; 0x15e <main+0x42>
 			{
 				contador++;
-  f4:	cf 5f       	subi	r28, 0xFF	; 255
-				while (!(PINC & (1<<PC2)));
-  f6:	32 9b       	sbis	0x06, 2	; 6
-  f8:	fe cf       	rjmp	.-4      	; 0xf6 <main+0x3e>
+ 158:	cf 5f       	subi	r28, 0xFF	; 255
+				while (!(PINC & (1<<PC2))); // esperar release
+ 15a:	32 9b       	sbis	0x06, 2	; 6
+ 15c:	fe cf       	rjmp	.-4      	; 0x15a <main+0x3e>
 			}
+
+			flag_up = 0;
+ 15e:	10 92 01 01 	sts	0x0101, r1	; 0x800101 <flag_up>
 		}
 
-		// BOTÓN DOWN
-		if (!(PINC & (1<<PC3)))
-  fa:	33 99       	sbic	0x06, 3	; 6
-  fc:	0e c0       	rjmp	.+28     	; 0x11a <main+0x62>
-  fe:	2f ef       	ldi	r18, 0xFF	; 255
- 100:	89 ef       	ldi	r24, 0xF9	; 249
- 102:	90 e0       	ldi	r25, 0x00	; 0
- 104:	21 50       	subi	r18, 0x01	; 1
- 106:	80 40       	sbci	r24, 0x00	; 0
- 108:	90 40       	sbci	r25, 0x00	; 0
- 10a:	e1 f7       	brne	.-8      	; 0x104 <main+0x4c>
- 10c:	00 c0       	rjmp	.+0      	; 0x10e <main+0x56>
- 10e:	00 00       	nop
+		// DOWN
+		if (flag_down)
+ 162:	80 91 00 01 	lds	r24, 0x0100	; 0x800100 <__DATA_REGION_ORIGIN__>
+ 166:	88 23       	and	r24, r24
+ 168:	49 f0       	breq	.+18     	; 0x17c <main+0x60>
 		{
-			_delay_ms(20);
+			debounce_timer0();
+ 16a:	0e 94 4c 00 	call	0x98	; 0x98 <debounce_timer0>
+
 			if (!(PINC & (1<<PC3)))
- 110:	33 99       	sbic	0x06, 3	; 6
- 112:	03 c0       	rjmp	.+6      	; 0x11a <main+0x62>
+ 16e:	33 99       	sbic	0x06, 3	; 6
+ 170:	03 c0       	rjmp	.+6      	; 0x178 <main+0x5c>
 			{
 				contador--;
- 114:	c1 50       	subi	r28, 0x01	; 1
+ 172:	c1 50       	subi	r28, 0x01	; 1
 				while (!(PINC & (1<<PC3)));
- 116:	33 9b       	sbis	0x06, 3	; 6
- 118:	fe cf       	rjmp	.-4      	; 0x116 <main+0x5e>
+ 174:	33 9b       	sbis	0x06, 3	; 6
+ 176:	fe cf       	rjmp	.-4      	; 0x174 <main+0x58>
 			}
+
+			flag_down = 0;
+ 178:	10 92 00 01 	sts	0x0100, r1	; 0x800100 <__DATA_REGION_ORIGIN__>
 		}
 
 		// LEDs
 		// Bits 0–5 ? PORTB
 		PORTB = contador & 0x3F;
- 11a:	8c 2f       	mov	r24, r28
- 11c:	8f 73       	andi	r24, 0x3F	; 63
- 11e:	85 b9       	out	0x05, r24	; 5
+ 17c:	8c 2f       	mov	r24, r28
+ 17e:	8f 73       	andi	r24, 0x3F	; 63
+ 180:	85 b9       	out	0x05, r24	; 5
 		// Bits 6–7 ? PC0–PC1
 		PORTC = (PORTC & 0xFC) | ((contador >> 6) & 0x03);
- 120:	88 b1       	in	r24, 0x08	; 8
- 122:	8c 7f       	andi	r24, 0xFC	; 252
- 124:	9c 2f       	mov	r25, r28
- 126:	92 95       	swap	r25
- 128:	96 95       	lsr	r25
- 12a:	96 95       	lsr	r25
- 12c:	93 70       	andi	r25, 0x03	; 3
- 12e:	89 2b       	or	r24, r25
- 130:	88 b9       	out	0x08, r24	; 8
+ 182:	88 b1       	in	r24, 0x08	; 8
+ 184:	8c 7f       	andi	r24, 0xFC	; 252
+ 186:	9c 2f       	mov	r25, r28
+ 188:	92 95       	swap	r25
+ 18a:	96 95       	lsr	r25
+ 18c:	96 95       	lsr	r25
+ 18e:	93 70       	andi	r25, 0x03	; 3
+ 190:	89 2b       	or	r24, r25
+ 192:	88 b9       	out	0x08, r24	; 8
 	}
- 132:	d0 cf       	rjmp	.-96     	; 0xd4 <main+0x1c>
+ 194:	d6 cf       	rjmp	.-84     	; 0x142 <main+0x26>
 
-00000134 <_exit>:
- 134:	f8 94       	cli
+00000196 <_exit>:
+ 196:	f8 94       	cli
 
-00000136 <__stop_program>:
- 136:	ff cf       	rjmp	.-2      	; 0x136 <__stop_program>
+00000198 <__stop_program>:
+ 198:	ff cf       	rjmp	.-2      	; 0x198 <__stop_program>

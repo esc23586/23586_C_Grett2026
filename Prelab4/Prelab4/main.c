@@ -88,11 +88,11 @@ uint16_t ADC_read(uint8_t channel)
 /*
 int main(void)
 {
-	//******** Configuración salidas***********
+	******** Configuración salidas***********
 	DDRB = 0x3F;   // PB0–PB5
 	DDRC |= 0x03;  // PC0–PC1
 
-	//********* Configuración entradas**************
+	********* Configuración entradas**************
 	DDRC &= ~((1<<PC2) | (1<<PC3)); // PC2, PC3 entradas
 	PORTC |= (1<<PC2) | (1<<PC3);   // Pull-ups
 
@@ -213,6 +213,7 @@ int main(void)
 		PORTC = (PORTC & 0xFC) | ((contador >> 6) & 0x03);
 	}
 }
+
 
 /****************************************/
 // NON-Interrupt subroutines
