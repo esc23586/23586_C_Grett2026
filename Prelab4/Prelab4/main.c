@@ -30,8 +30,32 @@ siendo pc0 y pc1 como los bits más significativos:
 /****************************************/
 // Main Function
 
-//==============Parte del prelaboratorio:========================
+//===========inicializar la parte del ADC==============
+void ADC_init()
+{
+	ADMUX = (1<<REFS0); // Referencia AVcc (5V)
 
+	ADCSRA = (1<<ADEN)  // Habilitar ADC
+	| (1<<ADPS2) | (1<<ADPS1) | (1<<ADPS0); // Prescaler 128
+}
+
+//===============Función para mostrar el ADC===============
+/*Esto significa que el ADC asume que 5 V equivalen a 1023,
+y cualquier valor inferior a 5 V será una relación entre 5 V y 1023.
+*/
+uint16_t ADC_read(uint8_t channel)
+{
+	// Seleccionar canal (A6 = 6)
+	ADMUX = (ADMUX & 0xF0) | (channel & 0x0F);
+
+	ADCSRA |= (1<<ADSC); // Iniciar conversión para mi adc.
+
+	while (ADCSRA & (1<<ADSC)); // Esperar
+
+	return ADC; // Resultado 0–1023
+}
+
+//==============Parte del prelaboratorio: CONTADOR ========================
 int main(void)
 {
 	//******** Configuración salidas***********
@@ -73,48 +97,18 @@ int main(void)
 			}
 		}
 
-		//  Mostrar en LEDs--
+		//  Mostrar en LEDs
 
 		// Bits 0–5 ? PORTB
 		PORTB = contador & 0x3F;
 
 		// Bits 6–7 ? PC0–PC1
 		PORTC = (PORTC & 0xFC) | ((contador >> 6) & 0x03);
-		//  ------
 		
-		
-		//adc:
-		ADC_init();
-		uint16_t valor;
-		while (1)
-		{
-			valor = ADC_read(6); // Saca el valor de mi A6 que está en la parte del potenciometro.
-		}
 	}
 }
 
-//===========Parte del Laboratorio: lectura ADC=====================
-/*Esto significa que el ADC asume que 5 V equivalen a 1023, 
-y cualquier valor inferior a 5 V será una relación entre 5 V y 1023.
-*/
-void ADC_init()
-{
-	ADMUX = (1<<REFS0); // referencia AVcc
-	ADCSRA = (1<<ADEN)  // habilitar ADC
-	| (1<<ADPS2) | (1<<ADPS1) | (1<<ADPS0); // prescaler 128 EN Teoría da 5 ms
-	
-}
 
-uint16_t ADC_read(uint8_t channel)
-{
-	ADMUX = (ADMUX & 0xF0) | (channel & 0x0F);
-
-	ADCSRA |= (1<<ADSC); // iniciar conversión
-
-	while (ADCSRA & (1<<ADSC)); // Esperar
-
-	return ADC;
-}
 
 
 /****************************************/
