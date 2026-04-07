@@ -32,6 +32,29 @@ siendo pc0 y pc1 como los bits más significativos:
 volatile uint8_t flag_up = 0;
 volatile uint8_t flag_down = 0;
 
+//======================Preliminar ================================
+// Timer init
+void timer0_init()
+{
+	TCCR0A = 0x00;
+	TCCR0B = (1<<CS01) | (1<<CS00); // prescaler 64
+}
+
+// Debounce
+void debounce_timer0()
+{
+	TCNT0 = 0;
+	while (TCNT0 < 78);
+}
+
+// PCINT init
+void pcint_init()
+{
+	PCICR |= (1<<PCIE1);
+	PCMSK1 |= (1<<PCINT10) | (1<<PCINT11);
+}
+
+
 /****************************************/
 // Main Function
 
@@ -59,6 +82,7 @@ uint16_t ADC_read(uint8_t channel)
 
 	return ADC; // Resultado 0–1023
 }
+
 
 //==============Parte del prelaboratorio: CONTADOR ========================
 /*
@@ -113,9 +137,19 @@ int main(void)
 		
 	}
 }
-
 */
 	
+	//  ISR
+	ISR(PCINT1_vect)
+	{
+		if (!(PINC & (1<<PC2)))
+		flag_up = 1;
+
+		if (!(PINC & (1<<PC3)))
+		flag_down = 1;
+	}
+
+
 //Parte del Main que se utiliza en el laboratorio:
 
 int main(void)
@@ -127,9 +161,12 @@ int main(void)
 	//********* Configuración entradas**************
 	DDRC &= ~((1<<PC2) | (1<<PC3)); // PC2, PC3 entradas
 	PORTC |= (1<<PC2) | (1<<PC3);   // Pull-ups
+	timer0_init();
+	pcint_init();
 
 	ADC_init(); //  inicializar ADC (PARTE NUEVA)
-
+	sei(); // habilitar interrupciones
+	
 	uint8_t contador = 0;
 	uint16_t adc_val = 0; //  variable ADC
 
@@ -140,26 +177,33 @@ int main(void)
 		
 		
 		// PARTE DEL PRELAB:
+		
 		//  BOTÓN UP
-		if (!(PINC & (1<<PC2)))
+		if (flag_up)
 		{
-			_delay_ms(20);
-			if (!(PINC & (1<<PC2)))
+			debounce_timer0();
+
+			if (!(PINC & (1<<PC2))) // confirmar
 			{
 				contador++;
-				while (!(PINC & (1<<PC2)));
+				while (!(PINC & (1<<PC2))); // esperar release
 			}
+
+			flag_up = 0;
 		}
 
-		// BOTÓN DOWN
-		if (!(PINC & (1<<PC3)))
+		// DOWN
+		if (flag_down)
 		{
-			_delay_ms(20);
+			debounce_timer0();
+
 			if (!(PINC & (1<<PC3)))
 			{
 				contador--;
 				while (!(PINC & (1<<PC3)));
 			}
+
+			flag_down = 0;
 		}
 
 		// LEDs
