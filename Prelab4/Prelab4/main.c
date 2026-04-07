@@ -127,34 +127,12 @@ ISR(PCINT1_vect)
 /****************************************/
 // Main Function
 
+
 //===========inicializar la parte del ADC==============
-void ADC_init()
-{
-	ADMUX = (1<<REFS0); // Referencia AVcc (5V)
-
-	ADCSRA = (1<<ADEN)  // Habilitar ADC
-	| (1<<ADPS2) | (1<<ADPS1) | (1<<ADPS0); // Prescaler 128
-}
-
-//===============Función para mostrar el ADC===============
 /*Esto significa que el ADC asume que 5 V equivalen a 1023,
 y cualquier valor inferior a 5 V será una relación entre 5 V y 1023.
-lyuego se divide
+luego se divide
 */
-
-
-uint16_t ADC_read(uint8_t channel)
-{
-	// Mantener referencia y limpiar canal
-	ADMUX = (1<<REFS0) | (channel & 0x07);
-
-	ADCSRA |= (1<<ADSC); // iniciar conversión
-
-	while (ADCSRA & (1<<ADSC)); // esperar
-
-	return ADC;
-}
-
 
 //==============Parte del prelaboratorio: CONTADOR ========================
 /*
@@ -210,17 +188,6 @@ int main(void)
 	}
 }
 */
-	
-	//  ISR
-	ISR(PCINT1_vect)
-	{
-		if (!(PINC & (1<<PC2)))
-		flag_up = 1;
-
-		if (!(PINC & (1<<PC3)))
-		flag_down = 1;
-	}
-
 
 //Parte del Main que se utiliza en el laboratorio:
 
@@ -229,56 +196,45 @@ int main(void)
 	//******** Configuración salidas***********
 	DDRB = 0x3F;   // PB0–PB5
 	DDRC |= 0x03;  // PC0–PC1
-
+	DDRD = 0xFF;    // 7  segmentos
+	
+	
 	//********* Configuración entradas**************
 	DDRC &= ~((1<<PC2) | (1<<PC3)); // PC2, PC3 entradas
 	PORTC |= (1<<PC2) | (1<<PC3);   // Pull-ups
-	timer0_init();
-	pcint_init();
-	//***************PINES Puerto D salida*********************
-	DDRD = 0xFF; // segmentos salida
 	
 	//****************Logica de entrada para DIPSMux :3 ******************
 	DDRC |= (1<<PC4) | (1<<PC5); // selección displays
 	//(Se eligió estos para facilidad de cableado)
 	
+	//***********INITs*************
+	timer0_init();
+	pcint_init();
+	ADC_init();
+	sei();
 	
-void multiplexar(uint8_t decenas, uint8_t unidades)
-{
-	// Mostrar decenas
-	PORTC &= ~((1<<PC4) | (1<<PC5)); // apagar ambos
-	PORTD = tabla7seg[decenas];
-	PORTC |= (1<<PC4); // activar display 1
-	_delay_ms(5);
-
-	// Mostrar unidades
-	PORTC &= ~((1<<PC4) | (1<<PC5));
-	PORTD = tabla7seg[unidades];
-	PORTC |= (1<<PC5); // activar display 2
-	_delay_ms(5);
-}
-
-	ADC_init(); //  inicializar ADC (PARTE NUEVA)
-	sei(); // habilitar interrupciones
-	
+	//========== VARIABLES ==========
 	uint8_t contador = 0;
-	uint16_t adc_val = 0; //  variable ADC
-	
+	uint16_t adc_val = 0;
+
+
+//loooooop; 
 
 	while (1)
 	{
-		//  Leer potenciómetro movible en A6
+		//  Leer potenciómetro  en A6
 		adc_val = ADC_read(6); // REVISAR
 		
-		uint8_t valor_display = adc_val / 10;
-		uint8_t decenas = valor_display / 10;
-		uint8_t unidades = valor_display % 10;
+		uint8_t adc_8bits = adc_val >> 2; // Escalar 10 bits ? 8 bits;
+		
+		uint8_t high = (adc_8bits >> 4) & 0x0F;// Separar en HEX
+		uint8_t low  = adc_8bits & 0x0F;
 
 		// Multiplexado
-		multiplexar(decenas, unidades);
+		multiplexar(high, low);
 		
 		
-		// PARTE DEL PRELAB:
+		// PARTE DEL PRELAB: contador
 		//  BOTÓN UP
 		if (flag_up)
 		{
@@ -311,7 +267,7 @@ void multiplexar(uint8_t decenas, uint8_t unidades)
 		// Bits 0–5 ? PORTB
 		PORTB = contador & 0x3F;
 		// Bits 6–7 ? PC0–PC1
-		PORTC = (PORTC & 0xFC) | ((contador >> 6) & 0x03);
+		PORTC = (PORTC & 0b11111100) | ((contador >> 6) & 0x03);
 		
 		
 	}
@@ -320,10 +276,8 @@ void multiplexar(uint8_t decenas, uint8_t unidades)
 
 /****************************************/
 // NON-Interrupt subroutines
-// La del timer para esperar
+
 
 /****************************************/
 // Interrupt routines
-
-//Interrupción de pinchange
 
