@@ -51,7 +51,7 @@ const uint8_t tabla7seg[10] = {
 	0b01101111  // 9
 };
 
-// Timer init
+// **Timer init**
 void timer0_init()
 {
 	TCCR0A = 0x00;
@@ -191,6 +191,21 @@ int main(void)
 	DDRC |= (1<<PC4) | (1<<PC5); // selección displays
 	//(Se eligió estos para facilidad de cableado)
 	
+	
+void multiplexar(uint8_t decenas, uint8_t unidades)
+{
+	// Mostrar decenas
+	PORTC &= ~((1<<PC4) | (1<<PC5)); // apagar ambos
+	PORTD = tabla7seg[decenas];
+	PORTC |= (1<<PC4); // activar display 1
+	_delay_ms(5);
+
+	// Mostrar unidades
+	PORTC &= ~((1<<PC4) | (1<<PC5));
+	PORTD = tabla7seg[unidades];
+	PORTC |= (1<<PC5); // activar display 2
+	_delay_ms(5);
+}
 
 	ADC_init(); //  inicializar ADC (PARTE NUEVA)
 	sei(); // habilitar interrupciones
@@ -202,11 +217,17 @@ int main(void)
 	while (1)
 	{
 		//  Leer potenciómetro movible en A6
-		adc_val = ADC_read(6);
+		adc_val = ADC_read(6); // REVISAR
+		
+		uint8_t valor_display = adc_val / 10;
+		uint8_t decenas = valor_display / 10;
+		uint8_t unidades = valor_display % 10;
+
+		// Multiplexado
+		multiplexar(decenas, unidades);
 		
 		
 		// PARTE DEL PRELAB:
-		
 		//  BOTÓN UP
 		if (flag_up)
 		{
@@ -240,6 +261,8 @@ int main(void)
 		PORTB = contador & 0x3F;
 		// Bits 6–7 ? PC0–PC1
 		PORTC = (PORTC & 0xFC) | ((contador >> 6) & 0x03);
+		
+		
 	}
 }
 
