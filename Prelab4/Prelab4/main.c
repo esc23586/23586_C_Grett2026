@@ -73,14 +73,14 @@ y cualquier valor inferior a 5 V será una relación entre 5 V y 1023.
 */
 uint16_t ADC_read(uint8_t channel)
 {
-	// Seleccionar canal (A6 = 6)
-	ADMUX = (ADMUX & 0xF0) | (channel & 0x0F);
+	// Mantener referencia y limpiar canal
+	ADMUX = (1<<REFS0) | (channel & 0x07);
 
-	ADCSRA |= (1<<ADSC); // Iniciar conversión para mi adc.
+	ADCSRA |= (1<<ADSC); // iniciar conversión
 
-	while (ADCSRA & (1<<ADSC)); // Esperar
+	while (ADCSRA & (1<<ADSC)); // esperar
 
-	return ADC; // Resultado 0–1023
+	return ADC;
 }
 
 
