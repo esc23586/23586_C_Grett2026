@@ -22,36 +22,40 @@ siendo pc0 y pc1 como los bits más significativos:
 /****************************************/
 // Encabezado (Libraries)
 #include <avr/io.h>
-#include <avr/interrupt.h> //se habilita para pinchange
+#include <avr/interrupt.h> 
 #define F_CPU 16000000UL
 #include <util/delay.h>
 /****************************************/
 // Function prototypes
 
-//para interrupciones
+//========== Variables globales====
 volatile uint8_t flag_up = 0;
 volatile uint8_t flag_down = 0;
 
-//======================Preliminar ================================
-uint8_t valor_display = adc_val / 10; 
-uint8_t decenas = valor_display / 10;
-uint8_t unidades = valor_display % 10;
+/****************************************/
 
 //  Tabla de 7 segmentos : 
-const uint8_t tabla7seg[10] = {
-	0b00111111, // 0
-	0b00000110, // 1
-	0b01011011, // 2
-	0b01001111, // 3
-	0b01100110, // 4
-	0b01101101, // 5
-	0b01111101, // 6
-	0b00000111, // 7
-	0b01111111, // 8
-	0b01101111  // 9
+const uint8_t tabla7seg[16] = {
+	0x3F, // 0
+	0x06, // 1
+	0x5B, // 2
+	0x4F, // 3
+	0x66, // 4
+	0x6D, // 5
+	0x7D, // 6
+	0x07, // 7
+	0x7F, // 8
+	0x6F, // 9
+	0x77, // A
+	0x7C, // b
+	0x39, // C
+	0x5E, // d
+	0x79, // E
+	0x71  // F
 };
 
-// **Timer init**
+// //========= TIMER--Debounce ==========
+
 void timer0_init()
 {
 	TCCR0A = 0x00;
@@ -65,11 +69,58 @@ void debounce_timer0()
 	while (TCNT0 < 78);
 }
 
-// PCINT init
+// ======= PCINT =======
 void pcint_init()
 {
-	PCICR |= (1<<PCIE1);
-	PCMSK1 |= (1<<PCINT10) | (1<<PCINT11);
+	
+	PCICR |= (1<<PCIE1); //port C
+	PCMSK1 |= (1<<PCINT10) | (1<<PCINT11); //para mis botones pc2 y pc3
+}
+
+//==================== ADC ====================
+void ADC_init()
+{
+	ADMUX = (1<<REFS0); // AVcc
+
+	ADCSRA = (1<<ADEN) |
+	(1<<ADPS2) | (1<<ADPS1) | (1<<ADPS0); // prescaler 128
+}
+
+uint16_t ADC_read(uint8_t channel)
+{
+	ADMUX = (1<<REFS0) | (channel & 0x07);
+
+	ADCSRA |= (1<<ADSC);
+
+	while (ADCSRA & (1<<ADSC));
+
+	return ADC;
+}
+
+//==================== MULTIPLEX ====================
+void multiplexar(uint8_t high, uint8_t low)
+{
+	// Display alto
+	PORTC &= 0b11001111; // limpiar PC4 y PC5
+	PORTD = tabla7seg[high];
+	PORTC |= (1<<PC4);
+	_delay_ms(5);
+
+	// Display bajo
+	PORTC &= 0b11001111;
+	PORTD = tabla7seg[low];
+	PORTC |= (1<<PC5);
+	_delay_ms(5);
+}
+
+//==================== ISR ====================
+ISR(PCINT1_vect)
+{
+	if (!(PINC & (1<<PC2)))
+	flag_up = 1;
+
+	if (!(PINC & (1<<PC3)))
+	flag_down = 1;
 }
 
 
