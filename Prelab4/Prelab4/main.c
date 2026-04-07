@@ -22,11 +22,16 @@ siendo pc0 y pc1 como los bits más significativos:
 /****************************************/
 // Encabezado (Libraries)
 #include <avr/io.h>
-//#include <avr/interrupt.h>
+#include <avr/interrupt.h> //se habilita para pinchange
 #define F_CPU 16000000UL
 #include <util/delay.h>
 /****************************************/
 // Function prototypes
+
+//para interrupciones
+volatile uint8_t flag_up = 0;
+volatile uint8_t flag_down = 0;
+
 /****************************************/
 // Main Function
 
@@ -167,5 +172,10 @@ int main(void)
 
 /****************************************/
 // NON-Interrupt subroutines
+// La del timer para esperar
+
 /****************************************/
 // Interrupt routines
+
+//Interrupción de pinchange
+
