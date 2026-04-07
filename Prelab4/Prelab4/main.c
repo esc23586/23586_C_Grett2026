@@ -33,6 +33,24 @@ volatile uint8_t flag_up = 0;
 volatile uint8_t flag_down = 0;
 
 //======================Preliminar ================================
+uint8_t valor_display = adc_val / 10; 
+uint8_t decenas = valor_display / 10;
+uint8_t unidades = valor_display % 10;
+
+//  Tabla de 7 segmentos : 
+const uint8_t tabla7seg[10] = {
+	0b00111111, // 0
+	0b00000110, // 1
+	0b01011011, // 2
+	0b01001111, // 3
+	0b01100110, // 4
+	0b01101101, // 5
+	0b01111101, // 6
+	0b00000111, // 7
+	0b01111111, // 8
+	0b01101111  // 9
+};
+
 // Timer init
 void timer0_init()
 {
@@ -70,7 +88,10 @@ void ADC_init()
 //===============Función para mostrar el ADC===============
 /*Esto significa que el ADC asume que 5 V equivalen a 1023,
 y cualquier valor inferior a 5 V será una relación entre 5 V y 1023.
+lyuego se divide
 */
+
+
 uint16_t ADC_read(uint8_t channel)
 {
 	// Mantener referencia y limpiar canal
@@ -163,12 +184,20 @@ int main(void)
 	PORTC |= (1<<PC2) | (1<<PC3);   // Pull-ups
 	timer0_init();
 	pcint_init();
+	//***************PINES Puerto D salida*********************
+	DDRD = 0xFF; // segmentos salida
+	
+	//****************Logica de entrada para DIPSMux :3 ******************
+	DDRC |= (1<<PC4) | (1<<PC5); // selección displays
+	//(Se eligió estos para facilidad de cableado)
+	
 
 	ADC_init(); //  inicializar ADC (PARTE NUEVA)
 	sei(); // habilitar interrupciones
 	
 	uint8_t contador = 0;
 	uint16_t adc_val = 0; //  variable ADC
+	
 
 	while (1)
 	{
