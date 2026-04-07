@@ -56,6 +56,7 @@ uint16_t ADC_read(uint8_t channel)
 }
 
 //==============Parte del prelaboratorio: CONTADOR ========================
+/*
 int main(void)
 {
 	//******** Configuración salidas***********
@@ -108,8 +109,61 @@ int main(void)
 	}
 }
 
+*/
+	
+//Parte del Main que se utiliza en el laboratorio:
 
+int main(void)
+{
+	//******** Configuración salidas***********
+	DDRB = 0x3F;   // PB0–PB5
+	DDRC |= 0x03;  // PC0–PC1
 
+	//********* Configuración entradas**************
+	DDRC &= ~((1<<PC2) | (1<<PC3)); // PC2, PC3 entradas
+	PORTC |= (1<<PC2) | (1<<PC3);   // Pull-ups
+
+	ADC_init(); //  inicializar ADC (PARTE NUEVA)
+
+	uint8_t contador = 0;
+	uint16_t adc_val = 0; //  variable ADC
+
+	while (1)
+	{
+		//  Leer potenciómetro movible en A6
+		adc_val = ADC_read(6);
+		
+		
+		// PARTE DEL PRELAB:
+		//  BOTÓN UP
+		if (!(PINC & (1<<PC2)))
+		{
+			_delay_ms(20);
+			if (!(PINC & (1<<PC2)))
+			{
+				contador++;
+				while (!(PINC & (1<<PC2)));
+			}
+		}
+
+		// BOTÓN DOWN
+		if (!(PINC & (1<<PC3)))
+		{
+			_delay_ms(20);
+			if (!(PINC & (1<<PC3)))
+			{
+				contador--;
+				while (!(PINC & (1<<PC3)));
+			}
+		}
+
+		// LEDs
+		// Bits 0–5 ? PORTB
+		PORTB = contador & 0x3F;
+		// Bits 6–7 ? PC0–PC1
+		PORTC = (PORTC & 0xFC) | ((contador >> 6) & 0x03);
+	}
+}
 
 /****************************************/
 // NON-Interrupt subroutines
