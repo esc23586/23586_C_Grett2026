@@ -29,9 +29,12 @@ siendo pc0 y pc1 como los bits más significativos:
 // Function prototypes
 
 //========== Variables globales====
-volatile uint8_t flag_up = 0;
-volatile uint8_t flag_down = 0;
+//volatile uint8_t flag_up = 0;
+//volatile uint8_t flag_down = 0;
 
+volatile uint8_t display_toggle = 0;
+volatile uint8_t high_global = 0;
+volatile uint8_t low_global = 0;
 /****************************************/
 
 //  Tabla de 7 segmentos : 
@@ -60,6 +63,7 @@ void timer0_init()
 {
 	TCCR0A = 0x00;
 	TCCR0B = (1<<CS01) | (1<<CS00); // prescaler 64
+	TIMSK0 = (1<<TOIE0); // habilitar overflow interrupt
 }
 
 // Debounce
@@ -114,15 +118,24 @@ void multiplexar(uint8_t high, uint8_t low)
 }
 
 //==================== ISR ====================
-ISR(PCINT1_vect)
+
+ISR(TIMER0_OVF_vect)
 {
-	if (!(PINC & (1<<PC2)))
-	flag_up = 1;
-
-	if (!(PINC & (1<<PC3)))
-	flag_down = 1;
+	if (display_toggle == 0)
+	{
+		PORTC &= 0b11001111;
+		PORTD = tabla7seg[high_global];
+		PORTC |= (1<<PC4);
+		display_toggle = 1;
+	}
+	else
+	{
+		PORTC &= 0b11001111;
+		PORTD = tabla7seg[low_global];
+		PORTC |= (1<<PC5);
+		display_toggle = 0;
+	}
 }
-
 
 /****************************************/
 // Main Function
@@ -224,11 +237,11 @@ int main(void)
 	{
 		//  Leer potenciómetro  en A6
 		adc_val = ADC_read(6); // REVISAR
-		
-		uint8_t adc_8bits = adc_val >> 2; // Escalar 10 bits ? 8 bits;
-		
-		uint8_t high = (adc_8bits >> 4) & 0x0F;// Separar en HEX
-		uint8_t low  = adc_8bits & 0x0F;
+
+		uint8_t adc_8bits = adc_val >> 2;
+
+		high_global = (adc_8bits >> 4) & 0x0F;
+		low_global  = adc_8bits & 0x0F;
 
 		// Multiplexado
 		multiplexar(high, low);
