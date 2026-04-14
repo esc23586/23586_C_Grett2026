@@ -32,13 +32,14 @@ siendo pc0 y pc1 como los bits más significativos:
 //volatile uint8_t flag_up = 0;
 //volatile uint8_t flag_down = 0;
 
-volatile uint8_t display_toggle = 0;
-volatile uint8_t high_global = 0;
-volatile uint8_t low_global = 0;
+volatile uint8_t counter = 0;
+volatile uint8_t lecADC = 0;
+volatile uint8_t last_inc = 1;
+volatile uint8_t last_dec = 1;
 /****************************************/
 
-//  Tabla de 7 segmentos : 
-const uint8_t tabla7seg[16] = {
+// Tabla 7 segmentos (cátodo común)
+const uint8_t TABLITA[16] = {
 	0x3F, // 0
 	0x06, // 1
 	0x5B, // 2
@@ -57,85 +58,6 @@ const uint8_t tabla7seg[16] = {
 	0x71  // F
 };
 
-// //========= TIMER--Debounce ==========
-
-void timer0_init()
-{
-	TCCR0A = 0x00;
-	TCCR0B = (1<<CS01) | (1<<CS00); // prescaler 64
-	TIMSK0 = (1<<TOIE0); // habilitar overflow interrupt
-}
-
-// Debounce
-void debounce_timer0()
-{
-	TCNT0 = 0;
-	while (TCNT0 < 78);
-}
-
-// ======= PCINT =======
-void pcint_init()
-{
-	
-	PCICR |= (1<<PCIE1); //port C
-	PCMSK1 |= (1<<PCINT10) | (1<<PCINT11); //para mis botones pc2 y pc3
-}
-
-//==================== ADC ====================
-void ADC_init()
-{
-	ADMUX = (1<<REFS0); // AVcc
-
-	ADCSRA = (1<<ADEN) |
-	(1<<ADPS2) | (1<<ADPS1) | (1<<ADPS0); // prescaler 128
-}
-
-uint16_t ADC_read(uint8_t channel)
-{
-	ADMUX = (1<<REFS0) | (channel & 0x07);
-
-	ADCSRA |= (1<<ADSC);
-
-	while (ADCSRA & (1<<ADSC));
-
-	return ADC;
-}
-
-//==================== MULTIPLEX ====================
-void multiplexar(uint8_t high, uint8_t low)
-{
-	// Display alto
-	PORTC &= 0b11001111; // limpiar PC4 y PC5
-	PORTD = tabla7seg[high];
-	PORTC |= (1<<PC4);
-	_delay_ms(5);
-
-	// Display bajo
-	PORTC &= 0b11001111;
-	PORTD = tabla7seg[low];
-	PORTC |= (1<<PC5);
-	_delay_ms(5);
-}
-
-//==================== ISR ====================
-
-ISR(TIMER0_OVF_vect)
-{
-	if (display_toggle == 0)
-	{
-		PORTC &= 0b11001111;
-		PORTD = tabla7seg[high_global];
-		PORTC |= (1<<PC4);
-		display_toggle = 1;
-	}
-	else
-	{
-		PORTC &= 0b11001111;
-		PORTD = tabla7seg[low_global];
-		PORTC |= (1<<PC5);
-		display_toggle = 0;
-	}
-}
 
 /****************************************/
 // Main Function
@@ -204,93 +126,149 @@ int main(void)
 
 //Parte del Main que se utiliza en el laboratorio:
 
-int main(void)
-{
-	//******** Configuración salidas***********
-	DDRB = 0x3F;   // PB0–PB5
-	DDRC |= 0x03;  // PC0–PC1
-	DDRD = 0xFF;    // 7  segmentos
-	
-	
-	//********* Configuración entradas**************
-	DDRC &= ~((1<<PC2) | (1<<PC3)); // PC2, PC3 entradas
-	PORTC |= (1<<PC2) | (1<<PC3);   // Pull-ups
-	
-	//****************Logica de entrada para DIPSMux :3 ******************
-	DDRC |= (1<<PC4) | (1<<PC5); // selección displays
-	//(Se eligió estos para facilidad de cableado)
-	
-	//***********INITs*************
-	timer0_init();
-	pcint_init();
-	ADC_init();
+void setup() {
+	cli();
+
+	// ---------------------------
+	// BOTONES (PC2, PC3)
+	// ---------------------------
+	DDRC &= ~((1 << PORTC2) | (1 << PORTC3));
+	PORTC |= (1 << PORTC2) | (1 << PORTC3); // Pull-up
+
+	// ---------------------------
+	// LEDs CONTADOR
+	// ---------------------------
+	DDRB |= 0x3F; // PB0–PB5 salidas
+	DDRC |= (1 << PORTC0) | (1 << PORTC1); // los más significativos
+
+	// ---------------------------
+	// DISPLAY
+	// ---------------------------
+	DDRD |= 0xFF; // PORTD completo salida
+	DDRC |= (1 << PORTC4) | (1 << PORTC5) | (1 << PORTC6);
+
+	// ---------------------------
+	// ALARMA EN PD7
+	// ---------------------------
+	DDRD |= (1 << PORTD7);
+
+	// ---------------------------
+	// ADC (A7)
+	// ---------------------------
+	ADMUX = (1 << REFS0) | (1 << ADLAR) | (7 << MUX0);
+	ADCSRA = (1 << ADEN) | (1 << ADIE) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
+	ADCSRA |= (1 << ADSC);
+
+	// ---------------------------
+	// TIMER2 (multiplexado)
+	// ---------------------------
+	TCCR2A = 0x00;
+	TCCR2B = (1 << CS21); // prescaler 8
+	TIMSK2 = (1 << TOIE2);
+	TCNT2 = 150;
+
 	sei();
-	
-	//========== VARIABLES ==========
-	uint8_t contador = 0;
-	uint16_t adc_val = 0;
-
-
-//loooooop; 
-
-	while (1)
-	{
-		//  Leer potenciómetro  en A6
-		adc_val = ADC_read(6); // REVISAR
-
-		uint8_t adc_8bits = adc_val >> 2;
-
-		high_global = (adc_8bits >> 4) & 0x0F;
-		low_global  = adc_8bits & 0x0F;
-
-		// Multiplexado
-		multiplexar(high, low);
-		
-		
-		// PARTE DEL PRELAB: contador
-		//  BOTÓN UP
-		if (flag_up)
-		{
-			debounce_timer0();
-
-			if (!(PINC & (1<<PC2))) // confirmar
-			{
-				contador++;
-				while (!(PINC & (1<<PC2))); // esperar release
-			}
-
-			flag_up = 0;
-		}
-
-		// DOWN
-		if (flag_down)
-		{
-			debounce_timer0();
-
-			if (!(PINC & (1<<PC3)))
-			{
-				contador--;
-				while (!(PINC & (1<<PC3)));
-			}
-
-			flag_down = 0;
-		}
-
-		// LEDs
-		// Bits 0–5 ? PORTB
-		PORTB = contador & 0x3F;
-		// Bits 6–7 ? PC0–PC1
-		PORTC = (PORTC & 0b11111100) | ((contador >> 6) & 0x03);
-		
-		
-	}
 }
 
 
-/****************************************/
-// NON-Interrupt subroutines
+
+// ---------------------------
+// ADC ISR
+// ---------------------------
+ISR(ADC_vect) {
+	lecADC = ADCH;
+	ADCSRA |= (1 << ADSC);
+}
 
 
-/****************************************/
-// Interrupt routines
+// ---------------------------
+// TIMER ISR (DISPLAYS)
+// ---------------------------
+ISR(TIMER2_OVF_vect) {
+
+	static uint8_t disp = 0;
+
+	// Apagar displays
+	//PORTC &= (1 << PORTC4) | (1 << PORTC5);
+	PORTC &= ~((1 << PORTC4) | (1 << PORTC5));
+
+	switch(disp) {
+
+		case 0: // Contador
+		PORTD = (PORTD & 0x80) | (TABLITA[counter & 0x0F] & 0x7F);
+		PORTC |= (1 << PORTC4);
+		break;
+		
+		case 1: // ADC alto
+		PORTD = (PORTD & 0x80) | (TABLITA[(lecADC >> 4) & 0x0F] & 0x7F);
+		PORTC |= (1 << PORTC5);
+		break;
+/*
+		case 1: // ADC bajo
+		PORTD = (PORTD & 0x80) | (TABLITA[lecADC & 0x0F] & 0x7F);
+		PORTC |= (1 << PORTC5);
+		break;
+
+		*/
+	}
+
+disp = (disp + 1) % 3;
+TCNT2 = 150;
+}
+
+//loooooop; 
+// MAIN
+int main(void) {
+
+	setup();
+	
+	while (1)
+	{
+		// ---------------------------
+		// BOTÓN INCREMENTO (PC2)
+		// ---------------------------
+		if (!(PINC & (1 << PORTC2)) && last_inc) {
+			_delay_ms(20);
+			if (!(PINC & (1 << PORTC2))) {
+				counter++;
+				last_inc = 0;
+			}
+		}
+		else if (PINC & (1 << PORTC2)) {
+			last_inc = 1;
+		}
+
+		// ---------------------------
+		// BOTÓN DECREMENTO (PC3)
+		// ---------------------------
+		if (!(PINC & (1 << PORTC3)) && last_dec) {
+			_delay_ms(20);
+			if (!(PINC & (1 << PORTC3))) {
+				counter--;
+				last_dec = 0;
+			}
+		}
+		else if (PINC & (1 << PORTC3)) {
+			last_dec = 1;
+		}
+
+		// ---------------------------
+		// MOSTRAR CONTADOR EN LEDs
+		// ---------------------------
+		// PB0–PB5
+		PORTB = (PORTB & 0xC0) | (counter & 0x3F);
+
+		// PC0–PC1
+		PORTC = (PORTC & 0xFC) | ((counter >> 6) & 0x03);
+
+		// ---------------------------
+		// ALARMA EN d7 comparación de ADC CON CONTADOR
+		// ---------------------------
+		if (lecADC > counter) {
+			PORTD |= (1 << PORTD7);
+			} else {
+			PORTD &= ~(1 << PORTD7);
+		}
+	}
+}
 
