@@ -36,7 +36,7 @@ int main(void)
 		// se combierte el tiempo en pulso. 
 		
 		//duty = 1500 + ((adc_value * 2500) / 1023); No funcionó
-		duty = 1000 + ((adc_value * 4000) / 1023);
+		//duty = 1000 + ((adc_value * 4000) / 1023); nop, le falta volt.
 
 		PWM1_SetDuty(duty); //se mueve el servo con el valor de duty
 	}
