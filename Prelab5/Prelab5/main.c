@@ -13,6 +13,7 @@
 /****************************************/
 // Encabezado (Libraries)
 #include "PWM1.h"
+#include "PWM2.h"
 #include "adc.h"
 /****************************************/
 // Function prototypes
@@ -23,6 +24,7 @@ int main(void)
 {
 	PWM1_Init();
 	PWM2_Init();
+	
 	ADC_Init();
 
 	   uint16_t adc_servo1;
@@ -36,8 +38,8 @@ int main(void)
 	while (1)
 	{
 		adc_servo1 = ADC_Read(7); // lee mi  pot en A7
-		adc_servo2 = ADC_Read(2); // PC2 nuevo adc NUEVO*
-		 //adc_led    = ADC_Read(3); // PC3, esta será la parte donde esta la lectura del pot 3
+		adc_servo2 = ADC_Read(3); // PC3 nuevo adc *
+		 //adc_led    = ADC_Read(3); // PC2, esta será la parte donde esta la lectura del pot 3
 
 
 		// Mapear ADC ? servo
@@ -53,7 +55,7 @@ int main(void)
 				
 		//funciona: 
 		duty_servo1= 1500 + ((adc_servo1 * 3000UL) / 1023);
-		duty_servo2 = 1000 + ((adc_servo2 * 4000) / 1023)
+		duty_servo2= 1500 + ((adc_servo2 * 3000UL) / 1023);
 
 		//PWM1_SetDuty(duty); //se mueve el servo con el valor de duty
 		PWM1_SetDuty(duty_servo1);

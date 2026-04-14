@@ -8,10 +8,14 @@
  Esto con  pb3 de la señal cuadrada. 
  
  */ 
+#include "PWM2.h"
+#include <avr/io.h>
+
 void PWM2_Init(void)
 {
-	// PB1 (OC1A) como salida del pinservo
+	// PB2 (OC1A) como salida del pinservo
 	DDRB |= (1 << PB2);
+	
 
 	// Modo Fast PWM, TOP = ICR1
 	TCCR1A = (1 << COM1A1) | (1 << WGM11);//activa salida PWM en OC1A
@@ -21,10 +25,10 @@ void PWM2_Init(void)
 	ICR1 = 39999;
 
 	// Posición inicial del servo (centro)
-	OCR1A = 3000;
+	OCR1B = 3000;
 }
 
 void PWM2_SetDuty(uint16_t duty)
 {
-	OCR1A = duty;//mov, servo
+	OCR1B = duty;
 }
