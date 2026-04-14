@@ -34,18 +34,13 @@ void PWM2_SetDuty(uint16_t duty)
 {
 	OCR1B = duty;
 }
-
-#include "PWM2.h"
-#include <avr/io.h>
-
-void PWM2_SetDuty(uint16_t duty)
-{
-	OCR1B = duty;
-}
 */
 
 #include "PWM2.h"
 #include <avr/io.h>
+
+//Se eliminó Init Debido a que daba poroblemas, adicionalmente no hacia falta volverlo a porgramar,
+// puesto qeu es lo mismo 
 
 void PWM2_SetDuty(uint16_t duty)
 {

@@ -42,7 +42,7 @@ void PWM1_Init(void)
 	// 50 Hz
 	ICR1 = 39999;
 
-	// Centro inicial
+	// Centro inicial Para ambos
 	OCR1A = 3000;
 	OCR1B = 3000;
 }

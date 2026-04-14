@@ -26,7 +26,7 @@ void PWM2_SetDuty(uint16_t duty); //Cambia el ancho del pulso, basicamente mueve
 #define PWM2_H_
 
 #include <stdint.h>
-
+//Se eliminó Init puesto que daba problemas: 
 // Ajusta el duty cycle para el segundo servo (OC1B)
 void PWM2_SetDuty(uint16_t duty);
 
