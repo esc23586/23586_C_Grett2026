@@ -3,29 +3,29 @@ Prelab5.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00800100  000001a4  2**0
+  0 .data         00000000  00800100  00800100  000001d8  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000150  00000000  00000000  00000054  2**1
+  1 .text         00000184  00000000  00000000  00000054  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .comment      00000030  00000000  00000000  000001a4  2**0
+  2 .comment      00000030  00000000  00000000  000001d8  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000001d4  2**2
+  3 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000208  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000070  00000000  00000000  00000214  2**0
+  4 .debug_aranges 00000070  00000000  00000000  00000248  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00000870  00000000  00000000  00000284  2**0
+  5 .debug_info   00000870  00000000  00000000  000002b8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 00000731  00000000  00000000  00000af4  2**0
+  6 .debug_abbrev 00000731  00000000  00000000  00000b28  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   000003b9  00000000  00000000  00001225  2**0
+  7 .debug_line   000003b9  00000000  00000000  00001259  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  0000008c  00000000  00000000  000015e0  2**2
+  8 .debug_frame  0000008c  00000000  00000000  00001614  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    000003d6  00000000  00000000  0000166c  2**0
+  9 .debug_str    000003d6  00000000  00000000  000016a0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    0000007c  00000000  00000000  00001a42  2**0
+ 10 .debug_loc    0000005c  00000000  00000000  00001a76  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000040  00000000  00000000  00001abe  2**0
+ 11 .debug_ranges 00000040  00000000  00000000  00001ad2  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -66,7 +66,7 @@ Disassembly of section .text:
   70:	de bf       	out	0x3e, r29	; 62
   72:	cd bf       	out	0x3d, r28	; 61
   74:	0e 94 77 00 	call	0xee	; 0xee <main>
-  78:	0c 94 a6 00 	jmp	0x14c	; 0x14c <_exit>
+  78:	0c 94 c0 00 	jmp	0x180	; 0x180 <_exit>
 
 0000007c <__bad_interrupt>:
   7c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -186,61 +186,88 @@ int main(void)
 		adc_value = ADC_Read(7); // lee mi  pot en A7
   f6:	87 e0       	ldi	r24, 0x07	; 7
   f8:	0e 94 47 00 	call	0x8e	; 0x8e <ADC_Read>
-		// Mapear ADC ? servo
-		//duty = 2000 + ((adc_value * 2000) / 1023); //Funciona, pero poquito 
-		// se combierte el tiempo en pulso. 
-		
-		//duty = 1500 + ((adc_value * 2500) / 1023); No funcionó
-		duty = 1000 + ((adc_value * 4000) / 1023);
-  fc:	20 ea       	ldi	r18, 0xA0	; 160
-  fe:	3f e0       	ldi	r19, 0x0F	; 15
- 100:	ac 01       	movw	r20, r24
- 102:	42 9f       	mul	r20, r18
- 104:	c0 01       	movw	r24, r0
- 106:	43 9f       	mul	r20, r19
- 108:	90 0d       	add	r25, r0
- 10a:	52 9f       	mul	r21, r18
- 10c:	90 0d       	add	r25, r0
- 10e:	11 24       	eor	r1, r1
- 110:	6f ef       	ldi	r22, 0xFF	; 255
- 112:	73 e0       	ldi	r23, 0x03	; 3
- 114:	0e 94 92 00 	call	0x124	; 0x124 <__udivmodhi4>
+		duty = 2000 + ((adc_value * 2000UL) / 1023); Funciona para 90
+		if (duty < 2200) duty = 2200;
+		if (duty > 3800) duty = 3800;
+		*/
+		//duty = 1800 + ((adc_value * 2400UL) / 1023); //Funciona pero se muve 140 aprox
+		duty = 1500 + ((adc_value * 3000UL) / 1023);
+  fc:	9c 01       	movw	r18, r24
+  fe:	a8 eb       	ldi	r26, 0xB8	; 184
+ 100:	bb e0       	ldi	r27, 0x0B	; 11
+ 102:	0e 94 b1 00 	call	0x162	; 0x162 <__umulhisi3>
+ 106:	2f ef       	ldi	r18, 0xFF	; 255
+ 108:	33 e0       	ldi	r19, 0x03	; 3
+ 10a:	40 e0       	ldi	r20, 0x00	; 0
+ 10c:	50 e0       	ldi	r21, 0x00	; 0
+ 10e:	0e 94 8f 00 	call	0x11e	; 0x11e <__udivmodsi4>
 
 		PWM1_SetDuty(duty); //se mueve el servo con el valor de duty
- 118:	cb 01       	movw	r24, r22
- 11a:	88 51       	subi	r24, 0x18	; 24
- 11c:	9c 4f       	sbci	r25, 0xFC	; 252
- 11e:	0e 94 72 00 	call	0xe4	; 0xe4 <PWM1_SetDuty>
- 122:	e9 cf       	rjmp	.-46     	; 0xf6 <main+0x8>
+ 112:	c9 01       	movw	r24, r18
+ 114:	84 52       	subi	r24, 0x24	; 36
+ 116:	9a 4f       	sbci	r25, 0xFA	; 250
+ 118:	0e 94 72 00 	call	0xe4	; 0xe4 <PWM1_SetDuty>
+ 11c:	ec cf       	rjmp	.-40     	; 0xf6 <main+0x8>
 
-00000124 <__udivmodhi4>:
- 124:	aa 1b       	sub	r26, r26
- 126:	bb 1b       	sub	r27, r27
- 128:	51 e1       	ldi	r21, 0x11	; 17
- 12a:	07 c0       	rjmp	.+14     	; 0x13a <__udivmodhi4_ep>
+0000011e <__udivmodsi4>:
+ 11e:	a1 e2       	ldi	r26, 0x21	; 33
+ 120:	1a 2e       	mov	r1, r26
+ 122:	aa 1b       	sub	r26, r26
+ 124:	bb 1b       	sub	r27, r27
+ 126:	fd 01       	movw	r30, r26
+ 128:	0d c0       	rjmp	.+26     	; 0x144 <__udivmodsi4_ep>
 
-0000012c <__udivmodhi4_loop>:
- 12c:	aa 1f       	adc	r26, r26
- 12e:	bb 1f       	adc	r27, r27
- 130:	a6 17       	cp	r26, r22
- 132:	b7 07       	cpc	r27, r23
- 134:	10 f0       	brcs	.+4      	; 0x13a <__udivmodhi4_ep>
- 136:	a6 1b       	sub	r26, r22
- 138:	b7 0b       	sbc	r27, r23
+0000012a <__udivmodsi4_loop>:
+ 12a:	aa 1f       	adc	r26, r26
+ 12c:	bb 1f       	adc	r27, r27
+ 12e:	ee 1f       	adc	r30, r30
+ 130:	ff 1f       	adc	r31, r31
+ 132:	a2 17       	cp	r26, r18
+ 134:	b3 07       	cpc	r27, r19
+ 136:	e4 07       	cpc	r30, r20
+ 138:	f5 07       	cpc	r31, r21
+ 13a:	20 f0       	brcs	.+8      	; 0x144 <__udivmodsi4_ep>
+ 13c:	a2 1b       	sub	r26, r18
+ 13e:	b3 0b       	sbc	r27, r19
+ 140:	e4 0b       	sbc	r30, r20
+ 142:	f5 0b       	sbc	r31, r21
 
-0000013a <__udivmodhi4_ep>:
- 13a:	88 1f       	adc	r24, r24
- 13c:	99 1f       	adc	r25, r25
- 13e:	5a 95       	dec	r21
- 140:	a9 f7       	brne	.-22     	; 0x12c <__udivmodhi4_loop>
- 142:	80 95       	com	r24
- 144:	90 95       	com	r25
- 146:	bc 01       	movw	r22, r24
- 148:	cd 01       	movw	r24, r26
- 14a:	08 95       	ret
+00000144 <__udivmodsi4_ep>:
+ 144:	66 1f       	adc	r22, r22
+ 146:	77 1f       	adc	r23, r23
+ 148:	88 1f       	adc	r24, r24
+ 14a:	99 1f       	adc	r25, r25
+ 14c:	1a 94       	dec	r1
+ 14e:	69 f7       	brne	.-38     	; 0x12a <__udivmodsi4_loop>
+ 150:	60 95       	com	r22
+ 152:	70 95       	com	r23
+ 154:	80 95       	com	r24
+ 156:	90 95       	com	r25
+ 158:	9b 01       	movw	r18, r22
+ 15a:	ac 01       	movw	r20, r24
+ 15c:	bd 01       	movw	r22, r26
+ 15e:	cf 01       	movw	r24, r30
+ 160:	08 95       	ret
 
-0000014c <_exit>:
- 14c:	f8 94       	cli
+00000162 <__umulhisi3>:
+ 162:	a2 9f       	mul	r26, r18
+ 164:	b0 01       	movw	r22, r0
+ 166:	b3 9f       	mul	r27, r19
+ 168:	c0 01       	movw	r24, r0
+ 16a:	a3 9f       	mul	r26, r19
+ 16c:	70 0d       	add	r23, r0
+ 16e:	81 1d       	adc	r24, r1
+ 170:	11 24       	eor	r1, r1
+ 172:	91 1d       	adc	r25, r1
+ 174:	b2 9f       	mul	r27, r18
+ 176:	70 0d       	add	r23, r0
+ 178:	81 1d       	adc	r24, r1
+ 17a:	11 24       	eor	r1, r1
+ 17c:	91 1d       	adc	r25, r1
+ 17e:	08 95       	ret
 
-0000014e <__stop_program>:
- 14e:	ff cf       	rjmp	.-2      	; 0x14e <__stop_program>
+00000180 <_exit>:
+ 180:	f8 94       	cli
+
+00000182 <__stop_program>:
+ 182:	ff cf       	rjmp	.-2      	; 0x182 <__stop_program>

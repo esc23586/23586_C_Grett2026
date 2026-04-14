@@ -22,21 +22,38 @@
 int main(void)
 {
 	PWM1_Init();
+	PWM2_Init();
 	ADC_Init();
 
-	uint16_t adc_value;
-	uint16_t duty;
+	   uint16_t adc_servo1;
+	   uint16_t adc_servo2;
+	   //uint16_t adc_led;
+
+	   uint16_t duty_servo1;
+	   uint16_t duty_servo2;
+	  // uint8_t duty_led;
 
 	while (1)
 	{
-		adc_value = ADC_Read(7); // lee mi  pot en A7
+		adc_servo1 = ADC_Read(7); // lee mi  pot en A7
+		 adc_servo2 = ADC_Read(2); // PC2 nuevo adc
+		 //adc_led    = ADC_Read(3); // PC3, esta será la parte donde esta la lectura del pot 3
+
 
 		// Mapear ADC ? servo
-		//duty = 2000 + ((adc_value * 2000) / 1023); //Funciona, pero poquito 
-		// se combierte el tiempo en pulso. 
+		//intentos:
+				//duty = 2500 + ((adc_value * 1000UL) / 1023); //Funciona 
 		
-		//duty = 1500 + ((adc_value * 2500) / 1023); No funcionó
-		//duty = 1000 + ((adc_value * 4000) / 1023); nop, le falta volt.
+				/*
+				duty = 2000 + ((adc_value * 2000UL) / 1023); Funciona para 90
+				if (duty < 2200) duty = 2200;
+				if (duty > 3800) duty = 3800;
+				*/
+				//duty = 1800 + ((adc_value * 2400UL) / 1023); //Funciona pero se muve 140 aprox
+				
+		//funciona: 
+		duty_servo1= 1500 + ((adc_servo1 * 3000UL) / 1023);
+		duty_servo2 = 1000 + ((adc_servo2 * 4000) / 1023)
 
 		PWM1_SetDuty(duty); //se mueve el servo con el valor de duty
 	}
