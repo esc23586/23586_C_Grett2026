@@ -23,7 +23,7 @@
 int main(void)
 {
 	PWM1_Init();
-	PWM2_Init();
+	//PWM2_Init();
 	
 	ADC_Init();
 

@@ -8,6 +8,8 @@
  Esto con  pb3 de la señal cuadrada. 
  
  */ 
+
+/*
 #include "PWM2.h"
 #include <avr/io.h>
 
@@ -27,6 +29,23 @@ void PWM2_Init(void)
 	// Posición inicial del servo (centro)
 	OCR1B = 3000;
 }
+
+void PWM2_SetDuty(uint16_t duty)
+{
+	OCR1B = duty;
+}
+
+#include "PWM2.h"
+#include <avr/io.h>
+
+void PWM2_SetDuty(uint16_t duty)
+{
+	OCR1B = duty;
+}
+*/
+
+#include "PWM2.h"
+#include <avr/io.h>
 
 void PWM2_SetDuty(uint16_t duty)
 {

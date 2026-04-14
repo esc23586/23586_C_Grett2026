@@ -6,9 +6,11 @@
  
  Desecripción de Archivo: Basicamente implementación pwm
  */ 
+
+
 #include "PWM1.h"
 #include <avr/io.h>
-
+/*
 void PWM1_Init(void)
 {
 	// PB1 (OC1A) como salida del pinservo 
@@ -24,7 +26,26 @@ void PWM1_Init(void)
 	// Posición inicial del servo (centro)
 	OCR1A = 3000;
 }
+*/
 
+
+
+void PWM1_Init(void)
+{
+	// PB1 (OC1A) y PB2 (OC1B) como salida
+	DDRB |= (1 << PB1) | (1 << PB2);
+
+	// Fast PWM, TOP = ICR1
+	TCCR1A = (1 << COM1A1) | (1 << COM1B1) | (1 << WGM11);
+	TCCR1B = (1 << WGM12) | (1 << WGM13) | (1 << CS11);
+
+	// 50 Hz
+	ICR1 = 39999;
+
+	// Centro inicial
+	OCR1A = 3000;
+	OCR1B = 3000;
+}
 void PWM1_SetDuty(uint16_t duty)
 {
 	OCR1A = duty;//mov, servo
