@@ -32,8 +32,8 @@ int main(void)
 		adc_value = ADC_Read(7); // A7
 
 		// Mapear ADC ? servo
-		//duty = 2000 + ((adc_value * 2000) / 1023);
-		duty = 1500 + ((adc_value * 2500) / 1023);
+		duty = 2000 + ((adc_value * 2000) / 1023); //Funciona, pero poquito
+		//duty = 1500 + ((adc_value * 2500) / 1023); No funcionó
 
 		PWM1_SetDuty(duty);
 	}

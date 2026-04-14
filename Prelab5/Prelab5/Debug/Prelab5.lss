@@ -188,10 +188,9 @@ int main(void)
   f8:	0e 94 47 00 	call	0x8e	; 0x8e <ADC_Read>
 
 		// Mapear ADC ? servo
-		//duty = 2000 + ((adc_value * 2000) / 1023);
-		duty = 1500 + ((adc_value * 2500) / 1023);
-  fc:	24 ec       	ldi	r18, 0xC4	; 196
-  fe:	39 e0       	ldi	r19, 0x09	; 9
+		duty = 2000 + ((adc_value * 2000) / 1023); //Funciona, pero poquito
+  fc:	20 ed       	ldi	r18, 0xD0	; 208
+  fe:	37 e0       	ldi	r19, 0x07	; 7
  100:	ac 01       	movw	r20, r24
  102:	42 9f       	mul	r20, r18
  104:	c0 01       	movw	r24, r0
@@ -203,11 +202,12 @@ int main(void)
  110:	6f ef       	ldi	r22, 0xFF	; 255
  112:	73 e0       	ldi	r23, 0x03	; 3
  114:	0e 94 92 00 	call	0x124	; 0x124 <__udivmodhi4>
+		//duty = 1500 + ((adc_value * 2500) / 1023); No funcionó
 
 		PWM1_SetDuty(duty);
  118:	cb 01       	movw	r24, r22
- 11a:	84 52       	subi	r24, 0x24	; 36
- 11c:	9a 4f       	sbci	r25, 0xFA	; 250
+ 11a:	80 53       	subi	r24, 0x30	; 48
+ 11c:	98 4f       	sbci	r25, 0xF8	; 248
  11e:	0e 94 72 00 	call	0xe4	; 0xe4 <PWM1_SetDuty>
  122:	e9 cf       	rjmp	.-46     	; 0xf6 <main+0x8>
 
