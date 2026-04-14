@@ -3,6 +3,9 @@
  *
  * Created: 14/04/2026 12:33:27
  *  Author: grett
+ 
+ Descripción del archivo:
+  Archivo donde se le indica al compilador, existen las funciones, especialmente para mi adc
  */ 
 
 #ifndef ADC_H_
@@ -13,7 +16,7 @@
 // Inicializa el ADC
 void ADC_Init(void);
 
-// Lee un canal del ADC (0–7)
+// Lee un canal del ADC (0–7) y devuelve el valor
 uint16_t ADC_Read(uint8_t channel);
 
 #endif

@@ -29,13 +29,16 @@ int main(void)
 
 	while (1)
 	{
-		adc_value = ADC_Read(7); // A7
+		adc_value = ADC_Read(7); // lee mi  pot en A7
 
 		// Mapear ADC ? servo
-		duty = 2000 + ((adc_value * 2000) / 1023); //Funciona, pero poquito
+		//duty = 2000 + ((adc_value * 2000) / 1023); //Funciona, pero poquito 
+		// se combierte el tiempo en pulso. 
+		
 		//duty = 1500 + ((adc_value * 2500) / 1023); No funcionó
+		duty = 1000 + ((adc_value * 4000) / 1023);
 
-		PWM1_SetDuty(duty);
+		PWM1_SetDuty(duty); //se mueve el servo con el valor de duty
 	}
 }
 

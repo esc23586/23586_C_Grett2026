@@ -9,17 +9,18 @@
 
 void ADC_Init(void)
 {
-	// Referencia AVcc
-	ADMUX = (1 << REFS0);
+	// Referencia  para mi AVcc, osea (5V)
+	ADMUX = (1 << REFS0); 
 
-	// Habilitar ADC + prescaler 128
+	// Habilitar mi ADC y con prescaler 128
 	ADCSRA = (1 << ADEN) |
-	(1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
+	(1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); //ADC trabaja en rango ~125 kHz
 }
 
 uint16_t ADC_Read(uint8_t channel)
 {
 	// Limitar canal a 0–7
+	//Esta es la arte a mo dificar a futuro
 	channel &= 0x07;
 
 	// Seleccionar canal (ej: 7 = A7)

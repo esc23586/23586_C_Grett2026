@@ -76,23 +76,23 @@ Disassembly of section .text:
 
 void ADC_Init(void)
 {
-	// Referencia AVcc
-	ADMUX = (1 << REFS0);
+	// Referencia  para mi AVcc, osea (5V)
+	ADMUX = (1 << REFS0); 
   80:	80 e4       	ldi	r24, 0x40	; 64
   82:	80 93 7c 00 	sts	0x007C, r24	; 0x80007c <__TEXT_REGION_LENGTH__+0x7f807c>
 
-	// Habilitar ADC + prescaler 128
+	// Habilitar mi ADC y con prescaler 128
 	ADCSRA = (1 << ADEN) |
   86:	87 e8       	ldi	r24, 0x87	; 135
   88:	80 93 7a 00 	sts	0x007A, r24	; 0x80007a <__TEXT_REGION_LENGTH__+0x7f807a>
   8c:	08 95       	ret
 
 0000008e <ADC_Read>:
-}
 
 uint16_t ADC_Read(uint8_t channel)
 {
 	// Limitar canal a 0–7
+	//Esta es la arte a mo dificar a futuro
 	channel &= 0x07;
   8e:	87 70       	andi	r24, 0x07	; 7
 
@@ -129,17 +129,17 @@ uint16_t ADC_Read(uint8_t channel)
 
 void PWM1_Init(void)
 {
-	// PB1 (OC1A) como salida
+	// PB1 (OC1A) como salida del pinservo 
 	DDRB |= (1 << PB1);
   b8:	84 b1       	in	r24, 0x04	; 4
   ba:	82 60       	ori	r24, 0x02	; 2
   bc:	84 b9       	out	0x04, r24	; 4
 
 	// Modo Fast PWM, TOP = ICR1
-	TCCR1A = (1 << COM1A1) | (1 << WGM11);
+	TCCR1A = (1 << COM1A1) | (1 << WGM11);//activa salida PWM en OC1A
   be:	82 e8       	ldi	r24, 0x82	; 130
   c0:	80 93 80 00 	sts	0x0080, r24	; 0x800080 <__TEXT_REGION_LENGTH__+0x7f8080>
-	TCCR1B = (1 << WGM12) | (1 << WGM13) | (1 << CS11); // prescaler = 8
+	TCCR1B = (1 << WGM12) | (1 << WGM13) | (1 << CS11); // modo Fast PWM con ICR1 y cs11 prescaler = 8
   c4:	8a e1       	ldi	r24, 0x1A	; 26
   c6:	80 93 81 00 	sts	0x0081, r24	; 0x800081 <__TEXT_REGION_LENGTH__+0x7f8081>
 
@@ -163,7 +163,7 @@ void PWM1_Init(void)
 
 void PWM1_SetDuty(uint16_t duty)
 {
-	OCR1A = duty;
+	OCR1A = duty;//mov, servo
   e4:	90 93 89 00 	sts	0x0089, r25	; 0x800089 <__TEXT_REGION_LENGTH__+0x7f8089>
   e8:	80 93 88 00 	sts	0x0088, r24	; 0x800088 <__TEXT_REGION_LENGTH__+0x7f8088>
   ec:	08 95       	ret
@@ -183,14 +183,17 @@ int main(void)
 
 	while (1)
 	{
-		adc_value = ADC_Read(7); // A7
+		adc_value = ADC_Read(7); // lee mi  pot en A7
   f6:	87 e0       	ldi	r24, 0x07	; 7
   f8:	0e 94 47 00 	call	0x8e	; 0x8e <ADC_Read>
-
 		// Mapear ADC ? servo
-		duty = 2000 + ((adc_value * 2000) / 1023); //Funciona, pero poquito
-  fc:	20 ed       	ldi	r18, 0xD0	; 208
-  fe:	37 e0       	ldi	r19, 0x07	; 7
+		//duty = 2000 + ((adc_value * 2000) / 1023); //Funciona, pero poquito 
+		// se combierte el tiempo en pulso. 
+		
+		//duty = 1500 + ((adc_value * 2500) / 1023); No funcionó
+		duty = 1000 + ((adc_value * 4000) / 1023);
+  fc:	20 ea       	ldi	r18, 0xA0	; 160
+  fe:	3f e0       	ldi	r19, 0x0F	; 15
  100:	ac 01       	movw	r20, r24
  102:	42 9f       	mul	r20, r18
  104:	c0 01       	movw	r24, r0
@@ -202,12 +205,11 @@ int main(void)
  110:	6f ef       	ldi	r22, 0xFF	; 255
  112:	73 e0       	ldi	r23, 0x03	; 3
  114:	0e 94 92 00 	call	0x124	; 0x124 <__udivmodhi4>
-		//duty = 1500 + ((adc_value * 2500) / 1023); No funcionó
 
-		PWM1_SetDuty(duty);
+		PWM1_SetDuty(duty); //se mueve el servo con el valor de duty
  118:	cb 01       	movw	r24, r22
- 11a:	80 53       	subi	r24, 0x30	; 48
- 11c:	98 4f       	sbci	r25, 0xF8	; 248
+ 11a:	88 51       	subi	r24, 0x18	; 24
+ 11c:	9c 4f       	sbci	r25, 0xFC	; 252
  11e:	0e 94 72 00 	call	0xe4	; 0xe4 <PWM1_SetDuty>
  122:	e9 cf       	rjmp	.-46     	; 0xf6 <main+0x8>
 
