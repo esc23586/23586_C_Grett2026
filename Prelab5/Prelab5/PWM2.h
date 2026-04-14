@@ -19,8 +19,3 @@ void PWM2_Init(void);
 void PWM2_SetDuty(uint16_t duty); //Cambia el ancho del pulso, basicamente mueve el servo, revisar***
 
 #endif
-
-
-
-
-#endif /* PWM2_H_ */
