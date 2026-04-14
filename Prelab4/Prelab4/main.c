@@ -212,7 +212,7 @@ ISR(TIMER2_OVF_vect) {
 		*/
 	}
 
-disp = (disp + 1) % 3;
+disp = (disp + 1) % 2;
 TCNT2 = 150;
 }
 
