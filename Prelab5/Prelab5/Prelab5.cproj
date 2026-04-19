@@ -120,27 +120,39 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="adc.c">
+    <Compile Include="ADC\adc.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="adc.h">
+    <Compile Include="ADC\adc.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="PWM1.c">
+    <Compile Include="PWM1F\PWM1.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="PWM1.h">
+    <Compile Include="PWM1F\PWM1.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="PWM2F\PWM2.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="PWM2F\PWM2.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="PWM3F\PWMLed.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="PWM2.c">
+    <Compile Include="PWM3F\PWMLed.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="PWM2.h">
-      <SubType>compile</SubType>
-    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ADC" />
+    <Folder Include="PWM3F" />
+    <Folder Include="PWM2F" />
+    <Folder Include="PWM1F" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

@@ -32,7 +32,12 @@ uint16_t ADC_Read(uint8_t channel)
 
 	// Esperar a que termine
 	while (ADCSRA & (1 << ADSC));
-
+	
+	/*
+	// Conversión real
+	ADCSRA |= (1 << ADSC);
+	while (ADCSRA & (1 << ADSC));
+*/
 	return ADC;
 
 }

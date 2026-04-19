@@ -12,9 +12,13 @@
  */
 /****************************************/
 // Encabezado (Libraries)
-#include "PWM1.h"
-#include "PWM2.h"
-#include "adc.h"
+#include <avr/io.h>
+//incluir librerias 
+#include "PWM1F/PWM1.h"//timer 1
+#include "PWM2F/PWM2.h"//timer 1
+#include "PWM3F/PWMLed.h"//PWM manual
+#include "ADC/adc.h" //lectura de todos
+
 /****************************************/
 // Function prototypes
 /****************************************/
@@ -22,28 +26,28 @@
 
 int main(void)
 {
-	PWM1_Init();
-	//PWM2_Init();
+	PWM1_Init(); // Servo 1 y 2 (Timer1)
+	PWM3_Init();// Led manual con TImer 0
 	
 	ADC_Init();
 
 	   uint16_t adc_servo1;
 	   uint16_t adc_servo2;
-	   //uint16_t adc_led;
+	   uint16_t adc_led;
 
 	   uint16_t duty_servo1;
 	   uint16_t duty_servo2;
-	  // uint8_t duty_led;
+	  uint8_t duty_led;
 
 	while (1)
 	{
 		adc_servo1 = ADC_Read(7); // lee mi  pot en A7
 		adc_servo2 = ADC_Read(3); // PC3 nuevo adc *
-		 //adc_led    = ADC_Read(3); // PC2, esta será la parte donde esta la lectura del pot 3
+		adc_led    = ADC_Read(2); // PC2, esta será la parte donde esta la lectura del pot 3
 
 
-		// Mapear ADC ? servo
-		//intentos:
+		// servo: Duty 
+		//Intentos:
 				//duty = 2500 + ((adc_value * 1000UL) / 1023); //Funciona 
 		
 				/*
@@ -56,10 +60,14 @@ int main(void)
 		//funciona: 
 		duty_servo1= 1500 + ((adc_servo1 * 3000UL) / 1023);
 		duty_servo2= 1500 + ((adc_servo2 * 3000UL) / 1023);
+		
+		// LED (0–255)
+		duty_led = (adc_led * 255UL) / 1023;
 
 		//PWM1_SetDuty(duty); //se mueve el servo con el valor de duty
 		PWM1_SetDuty(duty_servo1);
 		PWM2_SetDuty(duty_servo2);
+		PWM3_SetDuty(duty_led);
 
 	}
 }
