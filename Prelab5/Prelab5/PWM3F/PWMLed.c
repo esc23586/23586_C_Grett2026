@@ -32,7 +32,7 @@ void PWM3_SetDuty(uint8_t duty)
 }
 
 // ISR del Timer0
-ISR(TIMER0_OVF_vect)
+ISR(TIMER0_OVF_vect) //cada vez que pasa de 255 a 0
 {
 	pwm_counter++;
 
@@ -41,7 +41,7 @@ ISR(TIMER0_OVF_vect)
 		PORTB |= (1 << PB4); // ON
 	}
 
-	if (pwm_counter == pwm_duty)
+	if (pwm_counter == pwm_duty) //cuando llega al valor cae
 	{
 		PORTB &= ~(1 << PB4); // OFF
 	}

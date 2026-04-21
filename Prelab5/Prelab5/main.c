@@ -31,6 +31,7 @@ int main(void)
 	
 	ADC_Init();
 
+	//declaración Variable
 	   uint16_t adc_servo1;
 	   uint16_t adc_servo2;
 	   uint16_t adc_led;

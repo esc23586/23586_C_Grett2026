@@ -20,7 +20,6 @@ void ADC_Init(void)
 uint16_t ADC_Read(uint8_t channel)
 {
 	// Limitar canal a 0–7
-	//Esta es la arte a modificar a futuro
 	channel &= 0x07;
 
 	// Seleccionar canal (ej: 7 = A7)
