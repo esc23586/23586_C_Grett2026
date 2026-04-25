@@ -15,75 +15,72 @@
 #define F_CPU 16000000UL
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "ADC/adc.h"
+#include <stdlib.h>   // para itoa
 
 /****************************************/
 // Function prototypes
 void intUART(void);
 void writeChar(char c);
 void writeString(char *string);
+void writeNumber(uint8_t num);
+void displayASCII(uint8_t value);
+void printMenu(void);
+
 
 /****************************************/
 // Main Function
+volatile uint8_t modo = 0;
 
-/*
-//Esta fue la primera versión pero con delay
-void UART_init(unsigned int baud) {
-	unsigned int ubrr = F_CPU/16/baud - 1;
-	
-	UBRR0H = (ubrr >> 8);
-	UBRR0L = ubrr;
-	
-	UCSR0B = (1 << TXEN0); // habilitar transmisión
-	
-	UCSR0C = (1 << UCSZ01) | (1 << UCSZ00); // 8 bits de datos
-}
 
-void UART_sendChar(char data) {
-	while (!(UCSR0A & (1 << UDRE0))); // esperar buffer vacío
-	UDR0 = data;
-}
-*/
+//parte del Buffer
+char buffer[10];
 
-//Baud rates, 9600 bps y loop infinito de G
-/*
-int main(void) {
-	UART_init(9600); // baudrate
-	
-	while (1) {
-		UART_sendChar('G');
-		_delay_ms(1000);
-	}
-}
-*/
-
+//MAin loop:
 int main(void)
 {
 	cli();
+	//Entradas- leds:
+		// LED en PB5 como salida --- va indicando el modo.
+		DDRB |= (1<<DDB5);
+		PORTB &= ~(1<<PORTB5); // inicialmente apagado
+	
+		//  ---Configurar LEDs-----
+		// PD2–PD7 (6 LEDs)
+		DDRD |= (1<<DDD2)|(1<<DDD3)|(1<<DDD4)|(1<<DDD5)|(1<<DDD6)|(1<<DDD7);
+		// PB0–PB1 (2 LEDs)
+		DDRB |= (1<<DDB0)|(1<<DDB1);
 
-	// LED en PB5 como salida
-	DDRB |= (1<<DDB5);
-	PORTB &= ~(1<<PORTB5); // inicialmente apagado
-
-	intUART();// Inicializar UART
+		// Apagar todos al inicio
+		PORTD &= ~((1<<PORTD2)|(1<<PORTD3)|(1<<PORTD4)|(1<<PORTD5)|(1<<PORTD6)|(1<<PORTD7));
+		PORTB &= ~((1<<PORTB0)|(1<<PORTB1));
+		
+	//inincializaciónes
+	intUART();//  UART
+	ADC_Init();// la lectura adc
 
 	sei();// (no es necesario si no usas RX, pero son buenas costumbres xd)
 
 	//writeChar('G');  // solo una vez
-	
-	//si hubiera necesitado un string: 
-	//writeString("Escribe 'a' para encender LED, 'b' para apagar\r\n");// Mensaje inicial
 
-	
-	// Si se necesita un enter:
-	 writeString("G\r\n");
-	
+	printMenu();//mi función para el menu
 	while (1)
 	{
-		// no hacer nada
+	
 	}
 }
 
-
+//para el menu 
+void printMenu(void)
+{
+	writeString("=========== Menu =============\r\n");
+	writeString("1: Leer pot \r\n");
+	writeString("2: Valor en ASCII\r\n");
+	writeString("==============================\r\n");
+	writeString("\r\n");
+	writeString("\r\n");
+	PORTB &= ~(1<<PORTB5); // apagar LED
+}
 
 // Inicialización UART
 void intUART(void)
@@ -116,7 +113,8 @@ void writeChar(char c)
 	UDR0 = c;
 }
 
-// Enviar string (para futuro jsjijiji)
+// Enviar string
+
 void writeString(char *string)
 {
 	for (uint8_t i = 0; string[i] != '\0'; i++)
@@ -126,27 +124,156 @@ void writeString(char *string)
 }
 /****************************************/
 // NON-Interrupt subroutines
+
+	// Convertir número a ASCII y enviarlo
+	void writeNumber(uint8_t num)
+	{
+		char buffer[4];
+		uint8_t i = 0;
+
+		if (num == 0)
+		{
+			writeChar('0');
+			return;
+		}
+
+		while (num > 0)
+		{
+			buffer[i++] = (num % 10) + '0';
+			num /= 10;
+		}
+
+		for (int8_t j = i - 1; j >= 0; j--)
+		{
+			writeChar(buffer[j]);
+		}
+	}
+
+	/****************************************/
+	// Mostrar valor ASCII en LEDs
+	void displayASCII(uint8_t value)
+	{
+		// PD2–PD7 ? bits 0–5
+		PORTD = (PORTD & 0x03) | ((value << 2) & 0b11111100);
+
+		// PB0–PB1 ? bits 6–7
+		PORTB = (PORTB & 0b11111100) | ((value >> 6) & 0b00000011);
+	}
+
 /****************************************/
 // Interrupt routines
-
-// Interrupción al recibir dato
+// ISR UART RX
+/*
 ISR(USART_RX_vect)
 {
 	uint8_t bufferRX = UDR0;
 
-	writeChar(bufferRX); // eco (muestra lo que escribes)
+	// lo que veo:
+	writeChar(bufferRX);
 
-	if (bufferRX == 'a')
+	// Mostrar ASCII
+	writeString(" Respuesta: \r\n");
+	writeString(" Valor en tabla ASCII: ");
+	writeNumber(bufferRX);
+	writeString("\r\n");
+	// Mostrar en LEDs
+	displayASCII(bufferRX);
+	
+
+	// Control LED PB5
+	if (bufferRX == '1')
 	{
-		PORTB |= (1<<PORTB5); // encender LED
-		writeString(" LED ON\r\n");
+		//PORTB |= (1<<PORTB5);
+		
+		writeString(" Opción -Leer pot\r\n");
+		writeString("\r\n");
 	}
-	else if (bufferRX == 'b')
+	
+	
+	else if (bufferRX == '2')
 	{
-		PORTB &= ~(1<<PORTB5); // apagar LED
-		writeString(" LED OFF\r\n");
+		//parte de lectura en ascii
+		writeString("Modo ASCII\r\n");
+		writeString("ASCII: ");
+		writeNumber(bufferRX);
+		writeString("\r\n");
+
+		displayASCII(bufferRX);
+	}
+	else
+	{
+		writeString("Opción invalida\r\n");
+	}
+	// volver a mostrar menú
+	printMenu();
+
+}
+*/
+
+ISR(USART_RX_vect)
+{
+	uint8_t bufferRX = UDR0;
+
+	writeChar(bufferRX);
+	writeString("\r\n");
+	
+
+	// MODO 0 ? MENU
+	if (modo == 0)
+	{
+		
+		if (bufferRX == '1')
+		{
+			PORTB |= (1<<PORTB5); // encender LED
+			writeString("Leyendo potenciometro...xd\r\n");
+			// aquí iría la lectura como tal
+			//********************************
+			ADC_Read(2); // dummy
+			uint16_t valor = ADC_Read(2);
+
+			itoa(valor, buffer, 10);
+
+			writeString(" -> ADC: ");
+			writeString(buffer);
+			writeString("\r\n");
+			
+			//**********************************
+		}
+		
+		else if (bufferRX == '2')
+		{
+			PORTB |= (1<<PORTB5); // encender LED
+			writeString("Ingresa un caracter para ver su ASCII:\r\n");
+			modo = 2; // CAMBIAS DE MODO
+			return;   // NOTA: se sale sin mostrar menú
+		}
+		else
+		{
+			writeString("Opcion invalida\r\n");
+		}
+
+		printMenu();
+	}
+
+
+//Lesctura en ASCII: 
+
+	//  Modo 2---ESPERANDO CARACTER
+	else if (modo == 2)
+	{
+		
+		writeString("ASCII: ");
+		writeNumber(bufferRX);
+		writeString("\r\n");
+
+		displayASCII(bufferRX);
+	
+
+		modo = 0; //regresar al menú
+		printMenu();
 	}
 }
+
 
 
 //Segun tengo entendido:  half-duplex.
